@@ -16,434 +16,286 @@
       --neuron-fill: #0f2a1b;
       --next: #39c2ff;
       --next-fill: #0a2230;
-      --ap: #fff27a;
-      --inhib: #ff5c7a;
+      --signal: #fff27a;
       --nt: #7af0ff;
-      --ca: #ffb84d;
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; background: var(--bg); color: var(--text); }
-    body {
-      font: 17px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif;
+    body { font: 17px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    main { max-width: 1000px; margin: 0 auto; padding: 32px 16px 60px; }
+    h1 {
+      margin: 0 0 20px;
+      font: 700 clamp(1.9rem, 6vw, 2.8rem) ui-monospace, "SF Mono", Menlo, monospace;
+      color: var(--green);
+      text-shadow: 0 0 18px rgba(61, 255, 122, 0.45);
     }
-    main { max-width: 1120px; margin: 0 auto; padding: 32px 16px 80px; }
-    h1, h2, h3 { font-family: ui-monospace, "SF Mono", Menlo, monospace; color: var(--green); }
-    h1 { margin: 0; font-size: clamp(1.9rem, 6vw, 3rem); text-shadow: 0 0 18px rgba(61, 255, 122, 0.45); }
-    h2 { margin: 0 0 14px; font-size: 1.35rem; }
-    h3 { margin: 0 0 6px; font-size: 1.05rem; }
-    header p { margin: 8px 0 0; color: var(--muted); }
     .panel {
       background: var(--panel);
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 20px;
-      margin: 20px 0;
     }
-    .uwaga { color: var(--muted); font-size: 0.9rem; margin: 10px 0 0; }
 
-    /* --- schemat --- */
+    /* --- model --- */
     .przewijany { overflow-x: auto; }
-    .przewijany svg { min-width: 720px; }
+    .przewijany svg { min-width: 640px; }
     svg { display: block; width: 100%; height: auto; }
 
-    .dendryt { fill: none; stroke: var(--neuron); stroke-width: 3.5; stroke-linecap: round; }
-    .dendryt.gruby { stroke-width: 7; }
-    .wejscie { fill: var(--next-fill); stroke: var(--next); stroke-width: 2; cursor: pointer; }
+    .dendryt { fill: none; stroke: var(--neuron); stroke-width: 8; stroke-linecap: round; }
+    .wejscie { fill: var(--next-fill); stroke: var(--next); stroke-width: 2.5; cursor: pointer; }
     .wejscie:hover { fill: var(--next); }
-    .akson { stroke: var(--neuron); stroke-width: 6; stroke-linecap: round; }
-    .mielina { fill: #23493a; stroke: #6fcf97; stroke-width: 1.5; }
-    .wezel { fill: transparent; }
-    .terminal { fill: none; stroke: var(--neuron); stroke-width: 4; stroke-linecap: round; }
-    .kolbka { fill: var(--neuron-fill); stroke: var(--neuron); stroke-width: 2.5; }
-    .nastepny { stroke: var(--next); stroke-width: 6; stroke-linecap: round; opacity: 0.8; }
-    .kolec { fill: var(--next-fill); stroke: var(--next); stroke-width: 2; }
-    .soma, .wzgorek { fill: var(--neuron-fill); stroke: var(--neuron); stroke-width: 3; }
+    .soma { fill: var(--neuron-fill); stroke: var(--neuron); stroke-width: 3; }
     .jadro { fill: #163d28; stroke: #6fcf97; stroke-width: 2; }
-    .jaderko { fill: #6fcf97; }
+    .pierscien-tlo { fill: none; stroke: #1a2e24; stroke-width: 5; }
+    .pierscien { fill: none; stroke: var(--signal); stroke-width: 5; stroke-linecap: round; }
+    .akson { stroke: var(--neuron); stroke-width: 9; stroke-linecap: round; }
+    .kolbka { fill: var(--neuron-fill); stroke: var(--neuron); stroke-width: 3; }
+    .pecherzyk { fill: #143a26; stroke: #6fcf97; stroke-width: 1.5; }
+    .nastepny { fill: var(--next-fill); stroke: var(--next); stroke-width: 3; }
+    .receptor { fill: #0e3a50; stroke: var(--next); stroke-width: 1.5; }
+    .nt { fill: var(--nt); }
 
-    .aktywny { stroke: var(--ap) !important; filter: drop-shadow(0 0 6px var(--ap)); }
-    .kolec.aktywny, .kolbka.aktywny { fill: #3a3a10; }
-
-    .czesc { cursor: help; transition: filter 0.15s; }
-    .czesc.podswietl { stroke: var(--ap); filter: drop-shadow(0 0 5px var(--ap)); }
-    .wezel.podswietl { fill: rgba(255, 242, 122, 0.45); }
+    .aktywny { stroke: var(--signal) !important; filter: drop-shadow(0 0 7px var(--signal)); }
+    .receptor.aktywny { fill: var(--signal); }
+    .czesc { cursor: help; }
+    .czesc.podswietl { stroke: var(--signal); filter: drop-shadow(0 0 5px var(--signal)); }
 
     .linia { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 3; }
     .etykieta {
       fill: var(--text);
-      font: 600 14px system-ui, sans-serif;
+      font: 700 19px system-ui, sans-serif;
       paint-order: stroke;
       stroke: var(--bg);
       stroke-width: 5px;
       stroke-linejoin: round;
       cursor: help;
     }
-    .etykieta.podswietl { fill: var(--ap); }
-    .etykieta-mala { fill: var(--muted); font: 12px system-ui, sans-serif; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; }
-
-    .puls { fill: var(--ap); filter: drop-shadow(0 0 6px var(--ap)); }
-    .puls.hamujacy { fill: var(--inhib); filter: drop-shadow(0 0 6px var(--inhib)); }
-    .ap { fill: var(--ap); filter: drop-shadow(0 0 10px var(--ap)); }
-    .blysk { fill: none; stroke-width: 3; }
-    .nt-kropka { fill: var(--nt); }
+    .etykieta.podswietl { fill: var(--signal); }
+    .etykieta-mala { fill: var(--muted); font: 14px system-ui, sans-serif; }
+    .puls { fill: var(--signal); filter: drop-shadow(0 0 7px var(--signal)); }
 
     /* --- sterowanie --- */
-    .uklad { display: grid; gap: 20px; }
-    @media (min-width: 860px) { .uklad.dwa { grid-template-columns: 1fr 1fr; } }
-    .uklad > .panel { margin: 0; }
-
-    .przyciski { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+    .sterowanie { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 16px; }
     button {
       font: inherit;
-      font-size: 0.95rem;
       font-weight: 600;
       color: var(--text);
       background: #12261c;
       border: 1px solid var(--neuron);
       border-radius: 8px;
-      padding: 9px 14px;
+      padding: 9px 16px;
       cursor: pointer;
     }
     button:hover { background: #1b3a2a; }
-    button:focus-visible { outline: 2px solid var(--ap); outline-offset: 2px; }
-    button.ham { border-color: var(--inhib); }
-    button.ham:hover { background: #3a1520; }
-
-    .fazy { list-style: none; margin: 0 0 12px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+    button:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+    .fazy { list-style: none; margin: 0 0 0 auto; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
     .fazy li {
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       padding: 4px 10px;
       border: 1px solid var(--border);
       border-radius: 999px;
       color: var(--muted);
     }
-    .fazy li.teraz { color: #000; background: var(--ap); border-color: var(--ap); font-weight: 700; }
-    .narracja { margin: 0; min-height: 5.5em; }
+    .fazy li.teraz { color: #000; background: var(--signal); border-color: var(--signal); font-weight: 700; }
+    .podpis { margin: 14px 0 0; font-size: 1.1rem; min-height: 1.6em; }
 
-    .info h3 { color: var(--ap); }
-    .info p { margin: 0; }
-    .znaczek {
-      display: inline-block;
-      font: 700 0.72rem ui-monospace, Menlo, monospace;
-      color: #000;
-      background: var(--green);
-      border-radius: 4px;
-      padding: 1px 6px;
-      margin-left: 6px;
-      vertical-align: middle;
-    }
-
-    /* --- wykres i synapsa --- */
-    .odczyt { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
-    .odczyt strong { font: 700 1.5rem ui-monospace, Menlo, monospace; color: var(--ap); }
-    .os { fill: var(--muted); font: 11px ui-monospace, Menlo, monospace; }
-    .siatka { stroke: #1a2e24; stroke-width: 1; }
-    .prog { stroke: var(--inhib); stroke-width: 1.5; stroke-dasharray: 6 4; }
-    .spoczynek { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 4; }
-    .krzywa { fill: none; stroke: var(--ap); stroke-width: 2.5; stroke-linejoin: round; }
-
-    .pre { fill: var(--neuron-fill); stroke: var(--neuron); stroke-width: 3; }
-    .post { fill: var(--next-fill); stroke: var(--next); stroke-width: 3; transition: filter 0.3s; }
-    .post.aktywny { stroke: var(--ap); }
-    .szczelina-tlo { fill: #081018; }
-    .kanal { fill: var(--ca); opacity: 0.8; }
-    .receptor { fill: #0e3a50; stroke: var(--next); stroke-width: 1.5; }
-    .receptor.aktywny { fill: var(--ap); }
-    .pecherzyk { fill: #143a26; stroke: #6fcf97; stroke-width: 1.5; }
-    .nt { fill: var(--nt); }
-    .ca { fill: var(--ca); }
-    .syn-krok { margin: 10px 0 0; min-height: 3.2em; }
-
-    /* --- karty i reszta --- */
-    .karty { display: grid; gap: 12px; grid-template-columns: 1fr; }
-    @media (min-width: 640px) { .karty { grid-template-columns: 1fr 1fr; } }
+    /* --- karty --- */
+    .karty { display: grid; gap: 12px; margin-top: 20px; grid-template-columns: 1fr; }
+    @media (min-width: 640px) { .karty { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 900px) { .karty { grid-template-columns: repeat(4, 1fr); } }
     .karta {
-      text-align: left;
-      font-weight: 400;
-      background: #08110d;
+      background: var(--panel);
       border: 1px solid var(--border);
+      border-radius: 10px;
       padding: 14px 16px;
-      line-height: 1.5;
+      cursor: help;
     }
-    .karta:hover, .karta.podswietl { border-color: var(--ap); background: #141a0c; }
-    .karta strong { color: var(--green); font-size: 1.02rem; }
-    .karta span.opis { display: block; margin-top: 4px; color: var(--text); }
+    .karta.podswietl { border-color: var(--signal); }
+    .karta strong { display: block; color: var(--green); font-family: ui-monospace, Menlo, monospace; }
+    .karta span { display: block; margin-top: 4px; }
+    .karta em { display: block; margin-top: 8px; font-style: normal; font-size: 0.9rem; color: var(--next); }
 
-    .kroki { margin: 0; padding-left: 1.3em; }
-    .kroki li { margin-bottom: 10px; }
-    .kroki b { color: var(--green); }
-
-    table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
-    th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
-    th { color: var(--green); font-family: ui-monospace, Menlo, monospace; font-weight: 600; }
-    .wzor {
-      font: 600 1.15rem ui-monospace, Menlo, monospace;
-      color: var(--ap);
-      text-align: center;
-      margin: 16px 0 4px;
-    }
-
-    details { border-bottom: 1px solid var(--border); padding: 10px 0; }
-    details:last-child { border-bottom: none; }
-    summary { cursor: pointer; font-weight: 600; }
-    summary:focus-visible { outline: 2px solid var(--ap); outline-offset: 2px; }
-    details p { margin: 8px 0 0; color: var(--muted); }
-    details p b { color: var(--text); }
+    /* --- sztuczny neuron --- */
+    .panel + .panel { margin-top: 20px; }
+    .panel h2 { margin: 0 0 12px; font: 700 1.25rem ui-monospace, Menlo, monospace; color: var(--green); }
+    .polaczenie { stroke: var(--next); stroke-width: 3; }
+    .wezel-in { fill: var(--next-fill); stroke: var(--next); stroke-width: 2.5; }
+    .wezel { fill: var(--neuron-fill); stroke: var(--neuron); stroke-width: 3; }
+    .funkcja { fill: none; stroke: var(--text); stroke-width: 2.5; }
+    .wartosc { fill: var(--text); font: 700 18px ui-monospace, Menlo, monospace; pointer-events: none; }
+    .duzy { font-size: 30px; }
+    .kolumna { fill: var(--text); font: 700 16px system-ui, sans-serif; }
+    .odpowiednik { fill: var(--next); font: 14px system-ui, sans-serif; }
+    .wzor { margin: 12px 0 0; text-align: center; font: 700 1.2rem ui-monospace, Menlo, monospace; color: var(--signal); }
+    .wynik-sz { margin: 8px 0 0; text-align: center; font-size: 1.1rem; min-height: 1.6em; }
+    .roznica { margin: 10px 0 0; color: var(--muted); text-align: center; }
+    .roznica b { color: var(--text); }
+    table { width: 100%; min-width: 520px; border-collapse: collapse; font-size: 0.95rem; }
+    th, td { text-align: left; padding: 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    thead th { color: var(--green); font-family: ui-monospace, Menlo, monospace; }
+    tbody th { color: var(--signal); font-weight: 600; white-space: nowrap; }
+    tbody tr:last-child th, tbody tr:last-child td { border-bottom: none; }
+    .uwaga { margin: 16px 0 0; color: var(--muted); text-align: center; }
   </style>
 </head>
 <body>
 <main>
-  <header>
-    <h1>Jak działa neuron</h1>
-    <p>Biologiczny neuron: elementy, przekazywanie sygnału i synapsa. Najedź na element schematu, żeby zobaczyć opis, i wyślij bodźce, żeby zobaczyć, jak sygnał płynie.</p>
-  </header>
+  <h1>Jak działa neuron</h1>
 
-  <!-- ====== SCHEMAT ====== -->
   <section class="panel">
     <div class="przewijany">
-      <svg id="neuron" viewBox="0 0 1000 420" role="img" aria-labelledby="neuron-tytul">
-        <title id="neuron-tytul">Schemat neuronu: dendryty, ciało komórki z jądrem, wzgórek aksonu, akson z osłonką mielinową, zakończenia aksonu i synapsy z następnym neuronem</title>
+      <svg viewBox="0 0 1000 350" role="img" aria-labelledby="tytul">
+        <title id="tytul">Uproszczony neuron: dendryty, ciało komórki, akson i synapsa z następnym neuronem</title>
 
-        <!-- dendryty -->
-        <g>
-          <path class="czesc dendryt" data-czesc="dendryty" d="M 95 92 C 90 60, 75 45, 70 30"/>
-          <path class="czesc dendryt" data-czesc="dendryty" d="M 120 116 C 140 85, 150 70, 170 55"/>
-          <path class="czesc dendryt" data-czesc="dendryty" d="M 85 208 C 70 180, 55 170, 40 160"/>
-          <path class="czesc dendryt" data-czesc="dendryty" d="M 110 210 C 95 240, 80 255, 60 262"/>
-          <path class="czesc dendryt" data-czesc="dendryty" d="M 100 330 C 98 350, 102 370, 112 385"/>
-          <path class="czesc dendryt" data-czesc="dendryty" d="M 140 295 C 160 320, 175 340, 200 350"/>
-          <path class="czesc dendryt" data-czesc="dendryty" d="M 215 160 C 205 120, 215 90, 240 60"/>
-          <path class="czesc dendryt" data-czesc="dendryty" d="M 225 262 C 220 300, 235 330, 260 360"/>
-          <path id="d1" class="czesc dendryt gruby" data-czesc="dendryty" d="M 40 70 C 90 80, 130 120, 182 172"/>
-          <path id="d2" class="czesc dendryt gruby" data-czesc="dendryty" d="M 25 215 C 80 205, 130 215, 176 212"/>
-          <path id="d3" class="czesc dendryt gruby" data-czesc="dendryty" d="M 45 355 C 95 335, 140 300, 186 252"/>
-        </g>
+        <!-- 1. dendryty -->
+        <path id="d1" class="czesc dendryt" data-czesc="dendryty" d="M 50 70 C 120 90, 170 125, 214 152"/>
+        <path id="d2" class="czesc dendryt" data-czesc="dendryty" d="M 40 175 L 205 175"/>
+        <path id="d3" class="czesc dendryt" data-czesc="dendryty" d="M 50 280 C 120 260, 170 225, 214 198"/>
+        <circle class="wejscie" data-nr="0" cx="44" cy="68" r="11" tabindex="0" role="button" aria-label="Wyślij sygnał"/>
+        <circle class="wejscie" data-nr="1" cx="32" cy="175" r="11" tabindex="0" role="button" aria-label="Wyślij sygnał"/>
+        <circle class="wejscie" data-nr="2" cx="44" cy="282" r="11" tabindex="0" role="button" aria-label="Wyślij sygnał"/>
 
-        <!-- wejścia: zakończenia innych neuronów (synapsy na dendrytach) -->
-        <g>
-          <circle class="czesc wejscie" data-czesc="synapsa" data-dendryt="0" cx="40" cy="70" r="9" tabindex="0" role="button" aria-label="Wyślij bodziec dendrytem 1"/>
-          <circle class="czesc wejscie" data-czesc="synapsa" data-dendryt="1" cx="25" cy="215" r="9" tabindex="0" role="button" aria-label="Wyślij bodziec dendrytem 2"/>
-          <circle class="czesc wejscie" data-czesc="synapsa" data-dendryt="2" cx="45" cy="355" r="9" tabindex="0" role="button" aria-label="Wyślij bodziec dendrytem 3"/>
-        </g>
+        <!-- 3. akson -->
+        <line id="akson" class="czesc akson" data-czesc="akson" x1="315" y1="175" x2="700" y2="175"/>
 
-        <!-- akson -->
-        <line class="czesc akson" data-czesc="akson" x1="320" y1="212" x2="792" y2="212"/>
-        <g id="mielina"></g>
-        <g id="wezly"></g>
+        <!-- 2. ciało komórki z pierścieniem pobudzenia -->
+        <circle class="pierscien-tlo" cx="260" cy="175" r="66"/>
+        <circle id="pierscien" class="pierscien" cx="260" cy="175" r="66" transform="rotate(-90 260 175)"/>
+        <circle id="soma" class="czesc soma" data-czesc="cialo" cx="260" cy="175" r="55"/>
+        <circle class="czesc jadro" data-czesc="cialo" cx="260" cy="175" r="18"/>
 
-        <!-- zakończenia aksonu -->
-        <g>
-          <path id="t1" class="czesc terminal" data-czesc="zakonczenia" d="M 790 212 C 820 212, 830 160, 867 151"/>
-          <path id="t2" class="czesc terminal" data-czesc="zakonczenia" d="M 790 212 L 873 212"/>
-          <path id="t3" class="czesc terminal" data-czesc="zakonczenia" d="M 790 212 C 820 212, 830 264, 867 273"/>
-          <circle class="czesc kolbka" data-czesc="zakonczenia" cx="878" cy="150" r="11"/>
-          <circle class="czesc kolbka" data-czesc="zakonczenia" cx="884" cy="212" r="11"/>
-          <circle class="czesc kolbka" data-czesc="zakonczenia" cx="878" cy="274" r="11"/>
-        </g>
-
-        <!-- następny neuron (po drugiej stronie synaps) -->
-        <g>
-          <line class="czesc nastepny" data-czesc="synapsa" x1="1000" y1="150" x2="905" y2="150"/>
-          <line class="czesc nastepny" data-czesc="synapsa" x1="1000" y1="212" x2="911" y2="212"/>
-          <line class="czesc nastepny" data-czesc="synapsa" x1="1000" y1="274" x2="905" y2="274"/>
-          <circle class="czesc kolec" data-czesc="synapsa" cx="903" cy="150" r="6"/>
-          <circle class="czesc kolec" data-czesc="synapsa" cx="909" cy="212" r="6"/>
-          <circle class="czesc kolec" data-czesc="synapsa" cx="903" cy="274" r="6"/>
-        </g>
-
-        <!-- ciało komórki -->
-        <path id="wzgorek" class="czesc wzgorek" data-czesc="wzgorek" d="M 282 190 C 300 200, 310 204, 325 206 L 325 218 C 310 220, 300 224, 282 236 Z"/>
-        <path id="soma" class="czesc soma" data-czesc="cialo" d="M 180 175 C 195 150, 250 140, 275 170 C 290 188, 290 235, 278 252 C 255 282, 200 280, 182 252 C 168 232, 168 195, 180 175 Z"/>
-        <circle class="czesc jadro" data-czesc="cialo" cx="230" cy="212" r="20"/>
-        <circle class="jaderko" cx="236" cy="207" r="6"/>
+        <!-- 4. synapsa -->
+        <circle id="kolbka" class="czesc kolbka" data-czesc="synapsa" cx="735" cy="175" r="38"/>
+        <g id="pecherzyki"></g>
+        <path id="nastepny" class="czesc nastepny" data-czesc="synapsa" d="M 1000 115 L 830 115 C 805 115, 795 145, 795 175 C 795 205, 805 235, 830 235 L 1000 235 Z"/>
+        <g id="receptory"></g>
+        <g id="czastki"></g>
 
         <!-- etykiety -->
-        <g>
-          <line class="linia" x1="150" y1="30" x2="112" y2="104"/>
-          <text class="etykieta" data-czesc="dendryty" x="150" y="24" text-anchor="middle">Dendryty</text>
-          <line class="linia" x1="305" y1="138" x2="265" y2="165"/>
-          <text class="etykieta" data-czesc="cialo" x="300" y="132">Ciało komórki (soma)</text>
-          <line class="linia" x1="300" y1="318" x2="242" y2="226"/>
-          <text class="etykieta" data-czesc="cialo" x="300" y="334">Jądro komórkowe</text>
-          <line class="linia" x1="345" y1="256" x2="305" y2="222"/>
-          <text class="etykieta" data-czesc="wzgorek" x="345" y="272">Wzgórek aksonu</text>
-          <line class="linia" x1="557" y1="181" x2="557" y2="206"/>
-          <text class="etykieta" data-czesc="akson" x="557" y="174" text-anchor="middle">Akson</text>
-          <line class="linia" x1="519" y1="250" x2="519" y2="224"/>
-          <text class="etykieta" data-czesc="mielina" x="519" y="266" text-anchor="middle">Osłonka mielinowa</text>
-          <line class="linia" x1="690" y1="288" x2="632" y2="217"/>
-          <text class="etykieta" data-czesc="ranvier" x="690" y="304" text-anchor="middle">Przewężenie Ranviera</text>
-          <line class="linia" x1="850" y1="112" x2="872" y2="140"/>
-          <text class="etykieta" data-czesc="zakonczenia" x="850" y="104" text-anchor="middle">Zakończenia aksonu</text>
-          <line class="linia" x1="893" y1="318" x2="893" y2="282"/>
-          <text class="etykieta" data-czesc="synapsa" x="893" y="334" text-anchor="middle">Synapsa</text>
-          <text class="etykieta-mala" x="998" y="128" text-anchor="end">następny neuron</text>
-          <text class="etykieta-mala" x="10" y="410">● kółka: sygnały od innych neuronów (kliknij)</text>
-        </g>
+        <line class="linia" x1="125" y1="40" x2="130" y2="100"/>
+        <text class="etykieta" data-czesc="dendryty" x="125" y="32" text-anchor="middle">Dendryty</text>
+        <line class="linia" x1="260" y1="270" x2="260" y2="244"/>
+        <text class="etykieta" data-czesc="cialo" x="260" y="292" text-anchor="middle">Ciało komórki</text>
+        <line class="linia" x1="508" y1="150" x2="508" y2="168"/>
+        <text class="etykieta" data-czesc="akson" x="508" y="142" text-anchor="middle">Akson</text>
+        <line class="linia" x1="784" y1="270" x2="784" y2="200"/>
+        <text class="etykieta" data-czesc="synapsa" x="784" y="292" text-anchor="middle">Synapsa</text>
+        <text class="etykieta-mala" x="995" y="105" text-anchor="end">następny neuron</text>
+        <text class="etykieta-mala" x="12" y="335">● kliknij, żeby wysłać sygnał</text>
 
         <g id="pulsy"></g>
       </svg>
     </div>
-    <p class="uwaga">Schemat jest uproszczony. Animacja jest spowolniona mniej więcej tysiąc razy: prawdziwy impuls nerwowy trwa 1–2 milisekundy.</p>
-  </section>
 
-  <!-- ====== STEROWANIE + OPIS ELEMENTU ====== -->
-  <div class="uklad dwa">
-    <section class="panel">
-      <h2>Wyślij sygnał</h2>
-      <div class="przyciski">
-        <button data-akcja="pob">⚡ Bodziec pobudzający</button>
-        <button data-akcja="ham" class="ham">⛔ Bodziec hamujący</button>
-        <button data-akcja="trzy">3 pobudzające naraz</button>
-        <button data-akcja="trzyham">3 pobudzające + 1 hamujący</button>
-      </div>
+    <div class="sterowanie">
+      <button data-ile="1">1 sygnał</button>
+      <button data-ile="3">3 sygnały naraz</button>
       <ol class="fazy" id="fazy">
-        <li data-faza="1">1. Dendryty</li>
-        <li data-faza="2">2. Sumowanie</li>
-        <li data-faza="3">3. Próg</li>
-        <li data-faza="4">4. Akson</li>
-        <li data-faza="5">5. Synapsa</li>
+        <li>1. Dendryty</li><li>2. Ciało komórki</li><li>3. Akson</li><li>4. Synapsa</li>
       </ol>
-      <p class="narracja" id="narracja" aria-live="polite">Wyślij bodziec przyciskiem albo kliknij kółko na końcu dendrytu. Jeden bodziec to za mało, żeby neuron „wystrzelił”. Sprawdź, co się stanie przy kilku naraz.</p>
-    </section>
+    </div>
+    <p class="podpis" id="podpis" aria-live="polite">Wyślij sygnał i zobacz, jak płynie przez neuron.</p>
+  </section>
 
-    <section class="panel info" aria-live="polite">
-      <h2>Element neuronu</h2>
-      <h3 id="info-nazwa">Najedź na schemat</h3>
-      <p id="info-opis">Najedź kursorem na element neuronu albo jego podpis, żeby zobaczyć, czym jest i co robi.</p>
-    </section>
-  </div>
+  <section class="panel">
+    <h2>Sztuczny neuron: to samo w liczbach</h2>
+    <div class="przewijany">
+      <svg viewBox="0 0 1000 270" role="img" aria-labelledby="tytul-sz">
+        <title id="tytul-sz">Sztuczny neuron: trzy wejścia z wagami, suma, funkcja aktywacji z progiem i wyjście</title>
 
-  <!-- ====== WYKRES + SYNAPSA ====== -->
-  <div class="uklad dwa" style="margin-top:20px">
-    <section class="panel">
-      <div class="odczyt">
-        <h2 style="margin:0">Napięcie błony</h2>
-        <strong id="odczyt">−70 mV</strong>
-      </div>
-      <svg id="wykres" viewBox="0 0 420 220" role="img" aria-label="Wykres napięcia błony na wzgórku aksonu w czasie">
-        <g id="wykres-tlo"></g>
-        <polyline id="krzywa" class="krzywa" points=""/>
+        <text class="kolumna" x="80" y="22" text-anchor="middle">Wejścia</text>
+        <text class="kolumna" x="235" y="22" text-anchor="middle">Wagi</text>
+        <text class="kolumna" x="420" y="22" text-anchor="middle">Suma</text>
+        <text class="kolumna" x="625" y="22" text-anchor="middle">Aktywacja</text>
+        <text class="kolumna" x="890" y="22" text-anchor="middle">Wyjście</text>
+
+        <line class="czesc polaczenie" data-czesc="synapsa" x1="80" y1="60" x2="420" y2="135"/>
+        <line class="czesc polaczenie" data-czesc="synapsa" x1="80" y1="135" x2="420" y2="135"/>
+        <line class="czesc polaczenie" data-czesc="synapsa" x1="80" y1="210" x2="420" y2="135"/>
+        <line class="czesc polaczenie" data-czesc="akson" x1="420" y1="135" x2="890" y2="135"/>
+        <text class="etykieta-mala" x="235" y="84" text-anchor="middle">w₁ = 1</text>
+        <text class="etykieta-mala" x="235" y="126" text-anchor="middle">w₂ = 1</text>
+        <text class="etykieta-mala" x="235" y="198" text-anchor="middle">w₃ = 1</text>
+
+        <g id="pulsy-sz"></g>
+
+        <g>
+          <circle id="x0" class="czesc wezel-in" data-czesc="dendryty" cx="80" cy="60" r="22"/>
+          <circle id="x1" class="czesc wezel-in" data-czesc="dendryty" cx="80" cy="135" r="22"/>
+          <circle id="x2" class="czesc wezel-in" data-czesc="dendryty" cx="80" cy="210" r="22"/>
+          <text id="xv0" class="wartosc" x="80" y="66" text-anchor="middle">0</text>
+          <text id="xv1" class="wartosc" x="80" y="141" text-anchor="middle">0</text>
+          <text id="xv2" class="wartosc" x="80" y="216" text-anchor="middle">0</text>
+        </g>
+
+        <circle id="sigma" class="czesc wezel" data-czesc="cialo" cx="420" cy="135" r="45"/>
+        <text class="wartosc duzy" x="420" y="135" text-anchor="middle">Σ</text>
+        <text id="suma" class="wartosc" x="420" y="160" text-anchor="middle">= 0</text>
+
+        <rect id="f" class="czesc wezel" data-czesc="cialo" x="560" y="95" width="130" height="80" rx="10"/>
+        <path class="funkcja" d="M 585 155 H 625 V 115 H 665"/>
+        <text class="etykieta-mala" x="625" y="194" text-anchor="middle">próg: 3</text>
+
+        <circle id="ywezel" class="czesc wezel" data-czesc="akson" cx="890" cy="135" r="26"/>
+        <text id="y" class="wartosc" x="890" y="141" text-anchor="middle">0</text>
+
+        <text class="odpowiednik" x="80" y="258" text-anchor="middle">≈ dendryty</text>
+        <text class="odpowiednik" x="235" y="258" text-anchor="middle">≈ siła synapsy</text>
+        <text class="odpowiednik" x="522" y="258" text-anchor="middle">≈ ciało komórki (suma i próg)</text>
+        <text class="odpowiednik" x="890" y="258" text-anchor="middle">≈ akson</text>
       </svg>
-      <p class="uwaga">Napięcie na wzgórku aksonu z ostatnich 8 sekund. <span style="color:var(--inhib)">Czerwona linia</span> to próg pobudzenia (−55 mV), szara to potencjał spoczynkowy (−70 mV).</p>
-    </section>
-
-    <section class="panel">
-      <div class="odczyt">
-        <h2 style="margin:0">Zbliżenie: synapsa</h2>
-        <button id="tylko-synapsa">▶ Pokaż</button>
-      </div>
-      <svg id="synapsa" viewBox="0 0 520 300" role="img" aria-label="Zbliżenie synapsy: kolbka presynaptyczna z pęcherzykami, szczelina synaptyczna i błona postsynaptyczna z receptorami">
-        <rect class="szczelina-tlo" x="232" y="24" width="38" height="252"/>
-        <path class="pre" d="M 0 30 L 150 30 C 215 30, 232 80, 232 150 C 232 220, 215 270, 150 270 L 0 270 Z"/>
-        <path id="post" class="post" d="M 520 30 L 330 30 C 285 30, 270 80, 270 150 C 270 220, 285 270, 330 270 L 520 270 Z"/>
-        <rect class="kanal" x="221" y="64" width="9" height="16" rx="2"/>
-        <rect class="kanal" x="221" y="220" width="9" height="16" rx="2"/>
-        <g id="receptory"></g>
-        <g id="pecherzyki"></g>
-        <g id="czastki"></g>
-        <text class="etykieta" x="10" y="20">Kolbka presynaptyczna</text>
-        <text class="etykieta" x="512" y="20" text-anchor="end">Błona postsynaptyczna</text>
-        <text class="etykieta-mala" x="251" y="294" text-anchor="middle">szczelina</text>
-        <text class="etykieta-mala" x="14" y="56">pęcherzyki</text>
-        <text class="etykieta-mala" x="300" y="56">receptory</text>
-        <text class="etykieta-mala" x="236" y="92" style="fill:var(--ca)">Ca²⁺</text>
-      </svg>
-      <p class="syn-krok" id="syn-krok" aria-live="polite">Gdy impuls dotrze do zakończeń aksonu, tu zobaczysz, jak sygnał przechodzi przez synapsę. Możesz też kliknąć „Pokaż”.</p>
-    </section>
-  </div>
-
-  <!-- ====== ELEMENTY ====== -->
-  <section class="panel">
-    <h2>Elementy neuronu</h2>
-    <p class="uwaga" style="margin:0 0 14px">Oznaczone <span class="znaczek">KLUCZOWE</span> musisz znać. Najedź na kartę, żeby podświetlić element na schemacie.</p>
-    <div class="karty" id="karty"></div>
+    </div>
+    <p class="wzor">y = f( w₁·x₁ + w₂·x₂ + w₃·x₃ )</p>
+    <p class="wynik-sz" id="wynik-sz" aria-live="polite">Reaguje na te same przyciski co neuron powyżej.</p>
+    <p class="roznica">Różnica: neuron biologiczny działa w czasie i chemicznie, a sztuczny to jedno obliczenie. Uczenie sieci polega na zmienianiu wag.</p>
   </section>
 
-  <!-- ====== KROK PO KROKU ====== -->
-  <section class="panel">
-    <h2>Jak neuron przekazuje sygnał: krok po kroku</h2>
-    <ol class="kroki">
-      <li><b>Spoczynek.</b> Wnętrze neuronu ma ładunek ujemny względem otoczenia: ok. −70 mV. Utrzymuje go pompa sodowo-potasowa (Na⁺ na zewnątrz, K⁺ do środka).</li>
-      <li><b>Odbiór.</b> Inne neurony uwalniają neuroprzekaźnik na synapsach z dendrytami. Powstają małe zmiany napięcia: <b>pobudzające</b> (EPSP) podnoszą napięcie, <b>hamujące</b> (IPSP) je obniżają.</li>
-      <li><b>Sumowanie.</b> Ciało komórki zbiera wszystkie sygnały naraz (sumowanie przestrzenne) i te, które przychodzą szybko po sobie (sumowanie czasowe).</li>
-      <li><b>Próg i decyzja.</b> Jeśli na wzgórku aksonu napięcie przekroczy próg ok. −55 mV, otwierają się kanały sodowe. Na⁺ wpada do środka i napięcie skacze do ok. +40 mV: powstaje <b>potencjał czynnościowy</b>. Działa zasada <b>„wszystko albo nic”</b>: impuls albo powstaje w pełnej sile, albo wcale.</li>
-      <li><b>Powrót.</b> Zaraz potem otwierają się kanały potasowe, K⁺ wypływa i napięcie spada (repolaryzacja), na chwilę nawet poniżej spoczynku (hiperpolaryzacja). Przez ten czas neuron nie może wystrzelić ponownie (<b>okres refrakcji</b>), dlatego impuls biegnie tylko do przodu.</li>
-      <li><b>Przewodzenie.</b> Impuls biegnie aksonem. Dzięki mielinie przeskakuje między przewężeniami Ranviera (przewodzenie skokowe): nawet ok. 100 m/s zamiast 1–2 m/s w aksonie bez mieliny.</li>
-      <li><b>Synapsa.</b> W zakończeniu aksonu impuls otwiera kanały wapniowe. Ca²⁺ sprawia, że pęcherzyki uwalniają <b>neuroprzekaźnik</b> do szczeliny synaptycznej. Ten wiąże się z receptorami następnego neuronu i wywołuje w nim nowy potencjał postsynaptyczny. Sygnał elektryczny zamienia się w chemiczny i z powrotem w elektryczny.</li>
-      <li><b>Sprzątanie.</b> Neuroprzekaźnik jest usuwany ze szczeliny (wychwyt zwrotny albo rozkład przez enzymy), więc synapsa jest gotowa na kolejny sygnał.</li>
-    </ol>
-  </section>
+  <div class="karty" id="karty"></div>
 
-  <!-- ====== SZTUCZNY NEURON ====== -->
-  <section class="panel">
-    <h2>A co z tego bierze sztuczny neuron?</h2>
-    <p style="margin:0">Sieci neuronowe, łącznie z modelami LLM, to bardzo uproszczona matematyczna wersja tego mechanizmu:</p>
-    <p class="wzor">y = f( w₁·x₁ + w₂·x₂ + … + wₙ·xₙ + b )</p>
-    <table>
-      <thead><tr><th>Biologia</th><th>Sztuczny neuron</th></tr></thead>
-      <tbody>
-        <tr><td>Sygnały przychodzące do dendrytów</td><td>Wejścia x₁…xₙ</td></tr>
-        <tr><td>Siła synapsy (pobudzająca lub hamująca)</td><td>Wagi w₁…wₙ (dodatnie lub ujemne)</td></tr>
-        <tr><td>Sumowanie w ciele komórki</td><td>Suma ważona Σ wᵢ·xᵢ</td></tr>
-        <tr><td>Próg na wzgórku aksonu</td><td>Bias b i funkcja aktywacji f (np. ReLU, sigmoid)</td></tr>
-        <tr><td>Impuls w aksonie</td><td>Wyjście y, które trafia jako wejście do kolejnych neuronów</td></tr>
-        <tr><td>Uczenie: wzmacnianie często używanych synaps</td><td>Trening: dopasowywanie wag (np. propagacja wsteczna)</td></tr>
-      </tbody>
-    </table>
-    <p class="uwaga">Różnica: neuron biologiczny wysyła impulsy „wszystko albo nic” w czasie i jest chemiczny, a sztuczny zwraca jedną liczbę naraz.</p>
+  <section class="panel" style="margin-top:20px">
+    <h2>Porównanie</h2>
+    <div class="przewijany">
+      <table>
+        <thead><tr><th></th><th>Neuron biologiczny</th><th>Neuron sztuczny</th></tr></thead>
+        <tbody>
+          <tr><th>Sygnał</th><td>Impuls elektryczny w neuronie, substancja chemiczna w synapsie</td><td>Liczby</td></tr>
+          <tr><th>Decyzja</th><td>„Wszystko albo nic”: impuls powstaje w pełnej sile albo wcale</td><td>Funkcja aktywacji: 0/1 albo wartość ciągła (np. ReLU, sigmoid)</td></tr>
+          <tr><th>Czas</th><td>Działa w czasie: liczy się, ile impulsów i jak często</td><td>Jedno obliczenie, bez upływu czasu</td></tr>
+          <tr><th>Uczenie</th><td>Często używane synapsy się wzmacniają, nieużywane słabną</td><td>Trening: wagi są poprawiane na podstawie błędu</td></tr>
+          <tr><th>Skala</th><td>Mózg: ok. 86 mld neuronów i biliony synaps</td><td>Duży model językowy: miliardy wag (parametrów)</td></tr>
+          <tr><th>Energia</th><td>Cały mózg: ok. 20 W</td><td>Trening i działanie wymagają centrów danych z GPU</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="roznica">Sztuczny neuron to mocno uproszczona inspiracja biologicznym. Bierze z niego jedną ideę: <b>zsumuj ważone sygnały i zdecyduj, czy przekazać je dalej</b>.</p>
   </section>
-
-  <!-- ====== SPRAWDŹ SIĘ ====== -->
-  <section class="panel">
-    <h2>Sprawdź się</h2>
-    <details><summary>Którędy sygnał wchodzi do neuronu, a którędy wychodzi?</summary>
-      <p><b>Wchodzi dendrytami</b> (i częściowo przez ciało komórki), <b>wychodzi aksonem</b> do zakończeń i dalej przez synapsy.</p></details>
-    <details><summary>Gdzie zapada „decyzja”, czy neuron wyśle impuls?</summary>
-      <p>Na <b>wzgórku aksonu</b>, czyli tam, gdzie akson wychodzi z ciała komórki. Jeśli suma sygnałów przekroczy próg ok. −55 mV, powstaje potencjał czynnościowy.</p></details>
-    <details><summary>Co znaczy zasada „wszystko albo nic”?</summary>
-      <p>Potencjał czynnościowy ma <b>zawsze tę samą siłę</b>. Silniejszy bodziec nie daje większego impulsu, tylko <b>częstsze</b> impulsy.</p></details>
-    <details><summary>Po co aksonowi osłonka mielinowa?</summary>
-      <p>To <b>izolacja</b>, dzięki której impuls przeskakuje między przewężeniami Ranviera. Przewodzenie jest wtedy <b>dużo szybsze</b> i zużywa mniej energii.</p></details>
-    <details><summary>Jak sygnał przechodzi przez synapsę?</summary>
-      <p><b>Chemicznie.</b> Impuls otwiera kanały Ca²⁺, pęcherzyki uwalniają neuroprzekaźnik do szczeliny, a ten wiąże się z receptorami następnego neuronu i zmienia jego napięcie.</p></details>
-    <details><summary>Czemu w sztucznym neuronie odpowiada siła synapsy?</summary>
-      <p><b>Wadze</b> (w). Trening sieci to dopasowywanie wag, podobnie jak mózg wzmacnia lub osłabia synapsy podczas uczenia.</p></details>
-  </section>
+  <p class="uwaga">W neuronie sygnał jest <b>elektryczny</b>, a między neuronami, w synapsie, <b>chemiczny</b>.</p>
 </main>
 
 <script>
-  // ================= dane =================
   const CZESCI = {
-    dendryty: { nazwa: 'Dendryty', kluczowe: true,
-      opis: 'Rozgałęzione „anteny” neuronu. Odbierają sygnały od innych neuronów (przez synapsy) i przewodzą je jako małe zmiany napięcia w stronę ciała komórki. Jeden neuron może mieć tysiące połączeń na dendrytach.' },
-    cialo: { nazwa: 'Ciało komórki (soma)', kluczowe: true,
-      opis: 'Centrum neuronu z jądrem komórkowym, w którym jest DNA i gdzie powstają białka. Tu zbiegają się sygnały z dendrytów i są sumowane: pobudzające podnoszą napięcie błony, hamujące je obniżają.' },
-    wzgorek: { nazwa: 'Wzgórek aksonu',
-      opis: 'Miejsce „decyzji”, gdzie akson wychodzi z ciała komórki. Jeśli zsumowane napięcie przekroczy próg ok. −55 mV, powstaje potencjał czynnościowy. Jeśli nie, nic nie zostaje wysłane („wszystko albo nic”).' },
-    akson: { nazwa: 'Akson', kluczowe: true,
-      opis: 'Długie włókno wyjściowe neuronu, od ułamka milimetra do ponad metra długości. Przewodzi potencjał czynnościowy od ciała komórki do zakończeń, zawsze w jedną stronę i bez utraty siły.' },
-    mielina: { nazwa: 'Osłonka mielinowa',
-      opis: 'Tłuszczowa izolacja z komórek glejowych owinięta wokół aksonu. Dzięki niej impuls przeskakuje między przewężeniami zamiast płynąć powoli całą długością: nawet ok. 100 m/s zamiast 1–2 m/s.' },
-    ranvier: { nazwa: 'Przewężenia Ranviera',
-      opis: 'Krótkie przerwy w mielinie. Są w nich kanały sodowe, więc tu impuls jest odnawiany i „przeskakuje” do kolejnego przewężenia (przewodzenie skokowe).' },
-    zakonczenia: { nazwa: 'Zakończenia aksonu (kolbki synaptyczne)',
-      opis: 'Rozgałęzione końcówki aksonu. Przechowują pęcherzyki z neuroprzekaźnikiem, gotowe do uwolnienia, kiedy dotrze impuls.' },
-    synapsa: { nazwa: 'Synapsa', kluczowe: true,
-      opis: 'Miejsce kontaktu dwóch neuronów: kolbka presynaptyczna, wąska szczelina synaptyczna (ok. 20 nm) i błona postsynaptyczna z receptorami. Sygnał elektryczny zamienia się tu w chemiczny (neuroprzekaźnik) i z powrotem w elektryczny. Na schemacie synapsy są też na końcach dendrytów (niebieskie kółka): tam inne neurony przekazują sygnał temu neuronowi.' },
+    dendryty: ['1. Dendryty',
+      'Rozgałęzione „anteny” neuronu. Odbierają sygnały od innych neuronów i przekazują je do ciała komórki.',
+      'Sztuczny: wejścia x, czyli liczby (np. piksele obrazu albo słowa zamienione na liczby).'],
+    cialo: ['2. Ciało komórki',
+      'Zawiera jądro komórkowe. Sumuje sygnały z dendrytów i wysyła impuls tylko wtedy, gdy suma przekroczy próg („wszystko albo nic”).',
+      'Sztuczny: suma ważona Σ i funkcja aktywacji f, która decyduje o wyniku.'],
+    akson: ['3. Akson',
+      'Długie włókno wyjściowe, czasem dłuższe niż metr. Przewodzi impuls elektryczny od ciała komórki do zakończeń.',
+      'Sztuczny: wyjście y, które trafia do neuronów w kolejnej warstwie.'],
+    synapsa: ['4. Synapsa',
+      'Styk dwóch neuronów z wąską szczeliną. Zakończenie aksonu uwalnia neuroprzekaźnik, który pobudza (albo hamuje) następny neuron.',
+      'Sztuczny: waga w. Duża waga to silne połączenie, ujemna działa hamująco.'],
   };
+  const PROG = 3;        // tyle sygnałów naraz potrzeba do impulsu
+  const TAU = 600;       // ms: jak szybko pobudzenie słabnie (krótko, żeby oba modele liczyły tak samo)
 
-  const SPOCZYNEK = -70, PROG = -55;
-  const EPSP = 6, IPSP = -6;        // mV na jeden bodziec
-  const TAU = 1200;                 // ms: tempo powrotu do spoczynku
-  const AP_CZAS = 1300;             // ms: cały potencjał czynnościowy (spowolniony)
-
-  // ================= pomocnicze =================
+  // ---------- pomocnicze ----------
   const NS = 'http://www.w3.org/2000/svg';
   function el(tag, attrs, rodzic) {
     const e = document.createElementNS(NS, tag);
     for (const k in attrs) e.setAttribute(k, attrs[k]);
-    if (rodzic) rodzic.appendChild(e);
+    rodzic.appendChild(e);
     return e;
   }
   function anim(czas, krok) {
@@ -458,309 +310,191 @@
   }
   const czekaj = ms => anim(ms, () => {});
   const plynnie = p => p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
-  const mv = v => (v < 0 ? '−' : v > 0 ? '+' : '') + Math.abs(Math.round(v));
-  const losowa = (a, b) => a + Math.random() * (b - a);
+  const $ = id => document.getElementById(id);
 
-  const gPulsy = document.getElementById('pulsy');
-  const dendryty = ['d1', 'd2', 'd3'].map(id => document.getElementById(id));
-  const terminale = ['t1', 't2', 't3'].map(id => document.getElementById(id));
-  const wzgorek = document.getElementById('wzgorek');
-  const soma = document.getElementById('soma');
-
-  // ================= mielina i przewężenia =================
-  const WEZLY = [331.5];
-  const gMielina = document.getElementById('mielina');
-  const gWezly = document.getElementById('wezly');
-  for (let i = 0; i < 6; i++) {
-    el('rect', { class: 'czesc mielina', 'data-czesc': 'mielina', x: 338 + 75 * i, y: 201, width: 62, height: 22, rx: 11 }, gMielina);
-    WEZLY.push(406.5 + 75 * i);
-  }
-  for (let i = 1; i <= 5; i++) {
-    el('rect', { class: 'czesc wezel', 'data-czesc': 'ranvier', x: WEZLY[i] - 6.5, y: 198, width: 13, height: 28, rx: 3 }, gWezly);
+  function etap(nr, tekst) {
+    document.querySelectorAll('#fazy li').forEach((li, i) => li.classList.toggle('teraz', i + 1 === nr));
+    $('podpis').textContent = tekst;
   }
 
-  // ================= karty i podświetlanie =================
-  const karty = document.getElementById('karty');
-  for (const [klucz, c] of Object.entries(CZESCI)) {
-    const b = document.createElement('button');
-    b.className = 'karta';
-    b.dataset.czesc = klucz;
-    b.innerHTML = `<strong>${c.nazwa}</strong>${c.kluczowe ? '<span class="znaczek">KLUCZOWE</span>' : ''}<span class="opis">${c.opis}</span>`;
-    karty.appendChild(b);
+  // ---------- karty i podświetlanie ----------
+  for (const [klucz, [nazwa, opis, sztuczny]] of Object.entries(CZESCI)) {
+    const d = document.createElement('div');
+    d.className = 'karta';
+    d.dataset.czesc = klucz;
+    d.tabIndex = 0;
+    d.innerHTML = `<strong>${nazwa}</strong><span>${opis}</span><em>${sztuczny}</em>`;
+    $('karty').appendChild(d);
   }
-
   function pokaz(klucz) {
-    const c = CZESCI[klucz];
-    if (!c) return;
     document.querySelectorAll('.podswietl').forEach(e => e.classList.remove('podswietl'));
     document.querySelectorAll(`[data-czesc="${klucz}"]`).forEach(e => e.classList.add('podswietl'));
-    document.getElementById('info-nazwa').innerHTML = c.nazwa + (c.kluczowe ? '<span class="znaczek">KLUCZOWE</span>' : '');
-    document.getElementById('info-opis').textContent = c.opis;
   }
-  document.querySelectorAll('[data-czesc]').forEach(e => {
-    e.addEventListener('mouseenter', () => pokaz(e.dataset.czesc));
-    e.addEventListener('focus', () => pokaz(e.dataset.czesc));
-    e.addEventListener('click', () => pokaz(e.dataset.czesc));
+  document.querySelectorAll('[data-czesc]').forEach(e =>
+    ['mouseenter', 'focus', 'click'].forEach(ev => e.addEventListener(ev, () => pokaz(e.dataset.czesc))));
+
+  // ---------- elementy synapsy ----------
+  const pecherzyki = [[728, 155], [745, 175], [728, 195]].map(([x, y]) => {
+    const g = el('g', { transform: `translate(${x} ${y})` }, $('pecherzyki'));
+    el('circle', { class: 'pecherzyk', r: 9 }, g);
+    [[-3, -2], [3, -3], [0, 3]].forEach(([dx, dy]) => el('circle', { class: 'nt', cx: dx, cy: dy, r: 1.8 }, g));
+    return { g, x, y };
   });
+  const RECEPTORY_Y = [150, 175, 200];
+  const receptory = RECEPTORY_Y.map(y =>
+    el('rect', { class: 'receptor', x: 792, y: y - 7, width: 7, height: 14, rx: 2 }, $('receptory')));
 
-  // ================= narracja =================
-  function narracja(faza, tekst) {
-    document.querySelectorAll('#fazy li').forEach(li => li.classList.toggle('teraz', +li.dataset.faza === faza));
-    document.getElementById('narracja').textContent = tekst;
-  }
+  // ---------- pobudzenie (pierścień wokół ciała komórki) ----------
+  const OBWOD = 2 * Math.PI * 66;
+  const pierscien = $('pierscien');
+  pierscien.setAttribute('stroke-dasharray', OBWOD);
+  let pobudzenie = 0, zajety = false;
 
-  function blysk(cx, cy, kolor, rMax) {
-    const c = el('circle', { cx, cy, r: 4, class: 'blysk', style: `stroke:${kolor}` }, gPulsy);
-    anim(500, p => { c.setAttribute('r', 4 + (rMax - 4) * p); c.setAttribute('opacity', 1 - p); }).then(() => c.remove());
-  }
+  let ostatnio = performance.now();
+  (function petla(teraz) {
+    const dt = Math.min(teraz - ostatnio, 100);
+    ostatnio = teraz;
+    if (!zajety) pobudzenie *= Math.exp(-dt / TAU);
+    const p = Math.min(pobudzenie / PROG, 1);
+    pierscien.setAttribute('stroke-dashoffset', OBWOD * (1 - p));
+    requestAnimationFrame(petla);
+  })(ostatnio);
 
-  // ================= model napięcia błony =================
-  let V = SPOCZYNEK;
-  let ap = null;                 // trwający potencjał czynnościowy: { t0, V0 }
-  const probki = [];             // historia do wykresu
-
-  function apKsztalt(t, V0) {
-    if (t < 250) return V0 + (40 - V0) * Math.pow(t / 250, 2);          // depolaryzacja: Na⁺ wpada
-    if (t < 550) return 40 + (-80 - 40) * plynnie((t - 250) / 300);       // repolaryzacja: K⁺ wypływa
-    return -80 + 10 * plynnie((t - 550) / (AP_CZAS - 550));               // hiperpolaryzacja i powrót
-  }
-
-  function dodajPotencjal(dv, typ) {
-    if (ap) {
-      narracja(2, 'Neuron jest w okresie refrakcji: przed chwilą wystrzelił i przez moment nie reaguje na nowe bodźce. Dlatego impuls biegnie tylko do przodu.');
-      return;
-    }
-    V += dv;
-    blysk(285, 212, typ === 'pob' ? 'var(--ap)' : 'var(--inhib)', 34);
-    if (V < PROG) {
-      narracja(2, `${typ === 'pob' ? 'Bodziec pobudzający podniósł' : 'Bodziec hamujący obniżył'} napięcie błony do ${mv(V)} mV. `
-        + `Ciało komórki sumuje sygnały. Do progu (−55 mV) brakuje ${Math.round(PROG - V)} mV, więc neuron milczy, a napięcie powoli wraca do −70 mV.`);
-    }
-  }
-
-  function wystrzel(teraz) {
-    ap = { t0: teraz, V0: V };
-    wzgorek.classList.add('aktywny');
-    setTimeout(() => wzgorek.classList.remove('aktywny'), 700);
-    blysk(305, 212, 'var(--ap)', 40);
-    narracja(3, 'Próg −55 mV przekroczony na wzgórku aksonu! Otwierają się kanały sodowe, Na⁺ wpada do środka i napięcie skacze do ok. +40 mV. To potencjał czynnościowy: zawsze tej samej siły, „wszystko albo nic”.');
-    setTimeout(przewodzenie, 450);
-  }
-
-  // ================= bodźce w dendrytach =================
-  async function bodziec(typ, nr) {
-    const sciezka = dendryty[nr];
+  // ---------- 1. sygnał w dendrycie ----------
+  async function sygnal(nr) {
+    const sciezka = $('d' + (nr + 1));
     const L = sciezka.getTotalLength();
-    const kropka = el('circle', { r: 7, class: typ === 'pob' ? 'puls' : 'puls hamujacy' }, gPulsy);
-    const start = sciezka.getPointAtLength(0);
-    blysk(start.x, start.y, typ === 'pob' ? 'var(--next)' : 'var(--inhib)', 22);
-    if (!ap) narracja(1, typ === 'pob'
-      ? 'Inny neuron przekazał sygnał przez synapsę na dendrycie. Dendryt przewodzi go w stronę ciała komórki jako małą zmianę napięcia.'
-      : 'Sygnał hamujący dociera dendrytem. Zamiast podnosić napięcie błony, obniży je i oddali neuron od progu.');
-
-    await anim(900, p => {
+    const kropka = el('circle', { r: 8, class: 'puls' }, $('pulsy'));
+    if (!zajety) etap(1, 'Dendryty odbierają sygnał od innego neuronu.');
+    await anim(800, p => {
       const pt = sciezka.getPointAtLength(L * p);
       kropka.setAttribute('cx', pt.x); kropka.setAttribute('cy', pt.y);
     });
-    const koniec = sciezka.getPointAtLength(L);
-    await anim(300, p => {
-      kropka.setAttribute('cx', koniec.x + (285 - koniec.x) * p);
-      kropka.setAttribute('cy', koniec.y + (212 - koniec.y) * p);
-    });
     kropka.remove();
-    dodajPotencjal(typ === 'pob' ? EPSP : IPSP, typ);
-  }
+    if (zajety) return;
 
-  // ================= akson i zakończenia =================
-  async function przewodzenie() {
-    narracja(4, 'Potencjał czynnościowy biegnie aksonem. Pod mieliną nie ma kanałów jonowych, więc impuls przeskakuje między przewężeniami Ranviera (przewodzenie skokowe). Za nim błona wraca do spoczynku.');
-    const impuls = el('circle', { r: 9, class: 'ap', cx: WEZLY[0], cy: 212 }, gPulsy);
-    for (let i = 0; i < WEZLY.length - 1; i++) {
-      blysk(WEZLY[i], 212, 'var(--ap)', 20);
-      const x0 = WEZLY[i], x1 = WEZLY[i + 1];
-      await anim(170, p => impuls.setAttribute('cx', x0 + (x1 - x0) * plynnie(p)));
-    }
-    blysk(WEZLY[WEZLY.length - 1], 212, 'var(--ap)', 20);
-    impuls.remove();
-
-    const kropki = terminale.map(() => el('circle', { r: 7, class: 'ap' }, gPulsy));
-    await anim(450, p => terminale.forEach((t, i) => {
-      const pt = t.getPointAtLength(t.getTotalLength() * p);
-      kropki[i].setAttribute('cx', pt.x); kropki[i].setAttribute('cy', pt.y);
-    }));
-    kropki.forEach(k => k.remove());
-
-    narracja(5, 'Impuls dotarł do zakończeń aksonu. W synapsach sygnał elektryczny zamienia się w chemiczny: uwolniony neuroprzekaźnik przechodzi przez szczelinę do następnego neuronu. Zobacz zbliżenie synapsy poniżej.');
-    await Promise.all([synapsyNaSchemacie(), synapsaZblizenie()]);
-    if (!ap) narracja(5, 'Sygnał przekazany do następnego neuronu. Teraz to on sumuje swoje wejścia i „zdecyduje”, czy wystrzelić. Wyślij kolejne bodźce!');
-  }
-
-  async function synapsyNaSchemacie() {
-    const kolbki = document.querySelectorAll('.kolbka');
-    const kolce = document.querySelectorAll('.kolec');
-    kolbki.forEach(k => k.classList.add('aktywny'));
-    const pary = [[889, 150, 897], [895, 212, 903], [889, 274, 897]];
-    const kropki = [];
-    pary.forEach(([x0, y, x1]) => {
-      for (let k = 0; k < 3; k++) kropki.push({ e: el('circle', { r: 2.2, class: 'nt-kropka' }, gPulsy), x0, x1, y: y - 4 + k * 4 });
-    });
-    await anim(700, p => kropki.forEach(k => { k.e.setAttribute('cx', k.x0 + (k.x1 - k.x0) * p); k.e.setAttribute('cy', k.y); }));
-    kropki.forEach(k => k.e.remove());
-    kolbki.forEach(k => k.classList.remove('aktywny'));
-    kolce.forEach(k => k.classList.add('aktywny'));
-    await czekaj(900);
-    kolce.forEach(k => k.classList.remove('aktywny'));
-  }
-
-  // ================= zbliżenie synapsy =================
-  const gPech = document.getElementById('pecherzyki');
-  const gRec = document.getElementById('receptory');
-  const gCz = document.getElementById('czastki');
-  const post = document.getElementById('post');
-  const synKrok = document.getElementById('syn-krok');
-
-  const RECEPTORY_Y = [88, 118, 150, 182, 212];
-  const receptory = RECEPTORY_Y.map(y => el('rect', { class: 'receptor', x: 268, y: y - 7, width: 8, height: 14, rx: 2 }, gRec));
-
-  const POZYCJE = [[196, 105], [204, 150], [196, 195],               // te trzy uwolnią neuroprzekaźnik
-                   [150, 80], [160, 128], [150, 175], [160, 222], [100, 110], [95, 170], [110, 230], [55, 140]];
-  const pecherzyki = POZYCJE.map(([x, y]) => {
-    const g = el('g', {}, gPech);
-    el('circle', { class: 'pecherzyk', r: 13 }, g);
-    [[-5, -4], [4, -5], [-3, 5], [5, 4]].forEach(([dx, dy]) => el('circle', { class: 'nt', cx: dx, cy: dy, r: 2 }, g));
-    const v = { g, bx: x, by: y };
-    ustaw(v, x, y, 1, 1);
-    return v;
-  });
-  function ustaw(v, x, y, s, op) {
-    v.g.setAttribute('transform', `translate(${x} ${y}) scale(${s})`);
-    v.g.setAttribute('opacity', op);
-  }
-
-  let synapsaZajeta = false;
-  async function synapsaZblizenie() {
-    if (synapsaZajeta) return;
-    synapsaZajeta = true;
-
-    synKrok.textContent = '1. Impuls dociera do kolbki. Otwierają się kanały wapniowe i jony Ca²⁺ wpływają do środka.';
-    const ca = [];
-    for (let i = 0; i < 8; i++) {
-      const gora = i % 2 === 0;
-      ca.push({ e: el('circle', { class: 'ca', r: 3.5 }, gCz),
-        x0: losowa(244, 262), y0: gora ? losowa(50, 90) : losowa(210, 250),
-        x1: losowa(185, 210), y1: gora ? losowa(65, 85) : losowa(215, 235) });
-    }
-    await anim(900, p => ca.forEach(c => {
-      c.e.setAttribute('cx', c.x0 + (c.x1 - c.x0) * plynnie(p));
-      c.e.setAttribute('cy', c.y0 + (c.y1 - c.y0) * plynnie(p));
-      c.e.setAttribute('opacity', p < 0.8 ? 1 : (1 - p) * 5);
-    }));
-    ca.forEach(c => c.e.remove());
-
-    synKrok.textContent = '2. Ca²⁺ sprawia, że pęcherzyki z neuroprzekaźnikiem wędrują do błony i się z nią zlewają (egzocytoza).';
-    const uwalniane = pecherzyki.slice(0, 3);
-    await anim(800, p => uwalniane.forEach(v => ustaw(v, v.bx + (216 - v.bx) * plynnie(p), v.by, 1, 1)));
-    await anim(350, p => uwalniane.forEach(v => ustaw(v, 216, v.by, 1 - 0.4 * p, 1 - 0.75 * p)));
-
-    synKrok.textContent = '3. Neuroprzekaźnik (np. glutaminian) wysypuje się do szczeliny synaptycznej i przechodzi na drugą stronę.';
-    const nt = [];
-    uwalniane.forEach(v => {
-      for (let i = 0; i < 5; i++) {
-        const cel = RECEPTORY_Y[Math.floor(Math.random() * RECEPTORY_Y.length)];
-        nt.push({ e: el('circle', { class: 'nt', r: 2.6 }, gCz), x0: 232, y0: v.by + losowa(-8, 8),
-          x1: 264, y1: cel + losowa(-3, 3), faza: Math.random() * 6, cel });
-      }
-    });
-    await anim(1200, p => nt.forEach(n => {
-      const q = plynnie(p);
-      n.e.setAttribute('cx', n.x0 + (n.x1 - n.x0) * q);
-      n.e.setAttribute('cy', n.y0 + (n.y1 - n.y0) * q + Math.sin(p * 10 + n.faza) * 3 * (1 - p));
-    }));
-
-    synKrok.textContent = '4. Neuroprzekaźnik wiąże się z receptorami. Otwierają się kanały jonowe i w następnym neuronie powstaje potencjał postsynaptyczny.';
-    const trafione = new Set(nt.map(n => n.cel));
-    receptory.forEach((r, i) => { if (trafione.has(RECEPTORY_Y[i])) r.classList.add('aktywny'); });
-    post.classList.add('aktywny');
-    await czekaj(1300);
-
-    synKrok.textContent = '5. Neuroprzekaźnik jest usuwany ze szczeliny (wychwyt zwrotny lub rozkład przez enzymy), a pęcherzyki się odnawiają. Synapsa jest gotowa na kolejny sygnał.';
-    receptory.forEach(r => r.classList.remove('aktywny'));
-    post.classList.remove('aktywny');
-    const powrot = nt.map(n => ({ n, y: losowa(80, 220) }));
-    await anim(900, p => powrot.forEach(({ n, y }) => {
-      n.e.setAttribute('cx', 264 + (226 - 264) * p);
-      n.e.setAttribute('cy', n.y1 + (y - n.y1) * p);
-      n.e.setAttribute('opacity', 1 - p);
-    }));
-    nt.forEach(n => n.e.remove());
-    await anim(600, p => uwalniane.forEach(v => ustaw(v, 216 + (v.bx - 216) * p, v.by, 0.6 + 0.4 * p, 0.25 + 0.75 * p)));
-
-    synapsaZajeta = false;
-  }
-
-  // ================= wykres =================
-  const W = { x0: 50, x1: 410, y0: 15, y1: 195, vMin: -90, vMax: 50, okno: 8000 };
-  const yZ = v => W.y0 + (W.vMax - v) / (W.vMax - W.vMin) * (W.y1 - W.y0);
-  const tlo = document.getElementById('wykres-tlo');
-  [40, 0, -40, -80].forEach(v => {
-    el('line', { class: 'siatka', x1: W.x0, x2: W.x1, y1: yZ(v), y2: yZ(v) }, tlo);
-    el('text', { class: 'os', x: W.x0 - 6, y: yZ(v) + 4, 'text-anchor': 'end' }, tlo).textContent = mv(v);
-  });
-  el('line', { class: 'prog', x1: W.x0, x2: W.x1, y1: yZ(PROG), y2: yZ(PROG) }, tlo);
-  el('line', { class: 'spoczynek', x1: W.x0, x2: W.x1, y1: yZ(SPOCZYNEK), y2: yZ(SPOCZYNEK) }, tlo);
-  el('text', { class: 'os', x: W.x0 + 4, y: yZ(PROG) - 5, style: 'fill:var(--inhib)' }, tlo).textContent = 'próg −55';
-  el('text', { class: 'os', x: W.x0 + 4, y: W.y1 + 18 }, tlo).textContent = '← 8 s temu';
-  el('text', { class: 'os', x: W.x1, y: W.y1 + 18, 'text-anchor': 'end' }, tlo).textContent = 'teraz';
-  const krzywa = document.getElementById('krzywa');
-  const odczyt = document.getElementById('odczyt');
-
-  // ================= pętla główna =================
-  let ostatnio = performance.now();
-  function petla(teraz) {
-    const dt = Math.min(teraz - ostatnio, 100);
-    ostatnio = teraz;
-
-    if (ap) {
-      const t = teraz - ap.t0;
-      if (t >= AP_CZAS) { ap = null; V = SPOCZYNEK; }
-      else V = apKsztalt(t, ap.V0);
+    // 2. ciało komórki sumuje
+    pobudzenie += 1;
+    if (pobudzenie < PROG - 0.05) {
+      etap(2, 'Ciało komórki sumuje sygnały… za mało, próg nieprzekroczony.');
     } else {
-      V += (SPOCZYNEK - V) * (1 - Math.exp(-dt / TAU));
-      if (V >= PROG) wystrzel(teraz);
+      impuls();
     }
-
-    // kolor ciała komórki zależny od napięcia
-    const jasnosc = Math.max(0, Math.min(1, (V + 80) / 120));
-    soma.style.fill = `hsl(145, 55%, ${9 + 30 * jasnosc}%)`;
-
-    probki.push({ t: teraz, V });
-    while (probki.length && teraz - probki[0].t > W.okno) probki.shift();
-    krzywa.setAttribute('points', probki.map(s =>
-      `${(W.x1 - (teraz - s.t) / W.okno * (W.x1 - W.x0)).toFixed(1)},${yZ(s.V).toFixed(1)}`).join(' '));
-    odczyt.textContent = `${mv(V)} mV`;
-
-    requestAnimationFrame(petla);
   }
-  requestAnimationFrame(petla);
 
-  // ================= przyciski =================
+  // ---------- 2→3→4: impuls ----------
+  async function impuls() {
+    zajety = true;
+    pobudzenie = PROG;
+    const soma = $('soma');
+    soma.classList.add('aktywny');
+    etap(2, 'Próg przekroczony! Ciało komórki wysyła impuls.');
+    await czekaj(600);
+    soma.classList.remove('aktywny');
+    pobudzenie = 0;
+
+    etap(3, 'Akson przewodzi impuls elektryczny.');
+    const akson = $('akson');
+    akson.classList.add('aktywny');
+    const k = el('circle', { r: 10, class: 'puls', cx: 315, cy: 175 }, $('pulsy'));
+    await anim(1100, p => k.setAttribute('cx', 315 + (700 - 315) * plynnie(p)));
+    k.remove();
+    akson.classList.remove('aktywny');
+
+    etap(4, 'Synapsa: neuroprzekaźnik przechodzi przez szczelinę do następnego neuronu.');
+    const kolbka = $('kolbka');
+    kolbka.classList.add('aktywny');
+    await anim(500, p => pecherzyki.forEach(v =>
+      v.g.setAttribute('transform', `translate(${v.x + (762 - v.x) * plynnie(p)} ${v.y})`)));
+
+    const nt = [];
+    pecherzyki.forEach(v => { for (let i = 0; i < 4; i++) {
+      nt.push({ e: el('circle', { class: 'nt', r: 3 }, $('czastki')), y0: v.y + (i - 1.5) * 3,
+                y1: RECEPTORY_Y[(i + pecherzyki.indexOf(v)) % 3] + (i % 2 ? 3 : -3) });
+    } });
+    pecherzyki.forEach(v => v.g.setAttribute('opacity', 0.3));
+    await anim(900, p => nt.forEach(n => {
+      n.e.setAttribute('cx', 772 + 18 * plynnie(p));
+      n.e.setAttribute('cy', n.y0 + (n.y1 - n.y0) * plynnie(p));
+    }));
+
+    receptory.forEach(r => r.classList.add('aktywny'));
+    $('nastepny').classList.add('aktywny');
+    kolbka.classList.remove('aktywny');
+    etap(4, 'Sygnał przekazany do następnego neuronu!');
+    await czekaj(1400);
+
+    // powrót do stanu wyjściowego
+    receptory.forEach(r => r.classList.remove('aktywny'));
+    $('nastepny').classList.remove('aktywny');
+    nt.forEach(n => n.e.remove());
+    pecherzyki.forEach(v => { v.g.setAttribute('transform', `translate(${v.x} ${v.y})`); v.g.setAttribute('opacity', 1); });
+    zajety = false;
+  }
+
+  // ---------- sztuczny neuron: to samo jako obliczenie ----------
+  const WEJSCIA_Y = [60, 135, 210];
+  let przebiegSz = 0;     // nowsze kliknięcie przerywa starszą animację
+  async function sztucznyNeuron(nry) {
+    const moj = ++przebiegSz;
+    const x = [0, 0, 0];
+    nry.forEach(n => { x[n] = 1; });
+    x.forEach((v, i) => {
+      $('xv' + i).textContent = v;
+      $('x' + i).classList.toggle('aktywny', v === 1);
+    });
+    ['sigma', 'f', 'ywezel'].forEach(id => $(id).classList.remove('aktywny'));
+    $('suma').textContent = '= …';
+    $('y').textContent = '…';
+    $('wynik-sz').textContent = 'Wejścia razy wagi płyną do sumy…';
+    $('pulsy-sz').replaceChildren();
+
+    const kropki = nry.map(n => ({ n, e: el('circle', { r: 7, class: 'puls' }, $('pulsy-sz')) }));
+    await anim(800, p => kropki.forEach(k => {
+      k.e.setAttribute('cx', 80 + (420 - 80) * p);
+      k.e.setAttribute('cy', WEJSCIA_Y[k.n] + (135 - WEJSCIA_Y[k.n]) * p);
+    }));
+    kropki.forEach(k => k.e.remove());
+    if (moj !== przebiegSz) return;
+
+    const suma = x.reduce((a, b) => a + b, 0);   // wszystkie wagi = 1
+    $('suma').textContent = '= ' + suma;
+    $('sigma').classList.add('aktywny');
+    await czekaj(400);
+    if (moj !== przebiegSz) return;
+
+    const y = suma >= PROG ? 1 : 0;
+    $('f').classList.toggle('aktywny', y === 1);
+    if (y) {
+      const k = el('circle', { r: 8, class: 'puls', cx: 690, cy: 135 }, $('pulsy-sz'));
+      await anim(600, p => k.setAttribute('cx', 690 + (864 - 690) * p));
+      k.remove();
+      if (moj !== przebiegSz) return;
+    }
+    $('y').textContent = y;
+    $('ywezel').classList.toggle('aktywny', y === 1);
+    $('wynik-sz').textContent = y
+      ? `Σ = ${suma} ≥ próg 3 → wyjście y = 1 (neuron „wystrzelił”)`
+      : `Σ = ${suma} < próg 3 → wyjście y = 0 (nic się nie dzieje)`;
+  }
+
+  // ---------- sterowanie ----------
   let kolejny = 0;
-  document.querySelectorAll('[data-akcja]').forEach(b => b.addEventListener('click', () => {
-    const a = b.dataset.akcja;
-    if (a === 'pob') bodziec('pob', kolejny++ % 3);
-    if (a === 'ham') bodziec('ham', kolejny++ % 3);
-    if (a === 'trzy') [0, 1, 2].forEach(n => bodziec('pob', n));
-    if (a === 'trzyham') {
-      bodziec('ham', 1);
-      setTimeout(() => [0, 1, 2].forEach(n => bodziec('pob', n)), 150);
+  document.querySelectorAll('[data-ile]').forEach(b => b.addEventListener('click', () => {
+    if (b.dataset.ile === '3') {
+      [0, 1, 2].forEach(sygnal);
+      sztucznyNeuron([0, 1, 2]);
+    } else {
+      const nr = kolejny++ % 3;
+      sygnal(nr);
+      sztucznyNeuron([nr]);
     }
   }));
   document.querySelectorAll('.wejscie').forEach(w => {
-    const wyslij = () => bodziec('pob', +w.dataset.dendryt);
+    const wyslij = () => { sygnal(+w.dataset.nr); sztucznyNeuron([+w.dataset.nr]); };
     w.addEventListener('click', wyslij);
     w.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); wyslij(); } });
   });
-  document.getElementById('tylko-synapsa').addEventListener('click', synapsaZblizenie);
 </script>
 </body>
 </html>
